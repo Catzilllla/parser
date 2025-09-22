@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>PriceSet Parser</title>
+</head>
+<body>
+  <h1>PriceSet Parser</h1>
+  <p>Загрузите Excel (priceSetTable.xlsx). Первый столбец — название, второй — цена.</p>
+  <input type="file" id="fileInput">
+  <button onclick="upload()">Загрузить и запустить</button>
+  <p id="status">Прогресс: 0%</p>
+  <pre id="result"></pre>
+
+<script>
+const backend = "http://localhost:7000";
+
+async function upload() {
+  const fileInput = document.getElementById("fileInput");
+  if (!fileInput.files.length) return alert("Выберите файл!");
+
+  const fd = new FormData();
+  fd.append("file", fileInput.files[0]);
+
+  const res = await fetch(`${backend}/upload/`, { method: "POST", body: fd });
+  const data = await res.json();
+  const taskId = data.task_id;
+
+  document.getElementById("status").innerText = "Загрузка файла...\nЗапущено...";
+
+  const interval = setInterval(async () => {
+    const r = await fetch(`${backend}/progress/${taskId}`);
+    const d = await r.json();
+
+    document.getElementById("status").innerText =
+      `Прогресс: ${d.progress || 0}%\nСтатус: ${d.status}`;
+
+    if (d.status === "done") {
+      clearInterval(interval);
+      document.getElementById("result").innerText = JSON.stringify(d.result, null, 2);
+    }
+    if (d.status === "error") {
+      clearInterval(interval);
+      document.getElementById("result").innerText = "Ошибка: " + d.error;
+    }
+  }, 2000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  chipdip:
+    build: .
+    container_name: chipdip-parser
+    volumes:
+      - ./input:/app/input
+      - ./output:/app/output
+    command: ["python", "chipdip.py"]

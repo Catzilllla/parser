@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: fast-parser-api-backend
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./backend:/app
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: fast-parser-api-frontend
+    ports:
+      - "7070:80"
+    restart: always

@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  site-analyzer:
+    build: .
+    container_name: site-analyzer
+    ports:
+      - "7070:7071"
+    restart: unless-stopped
